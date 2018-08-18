@@ -22,7 +22,7 @@
 
 int enable_relative_paths(char **argv) {
     char buf[256], *p;
-    strncpy(buf, argv[0], sizeof(buf));
+    strlcpy(buf, argv[0], sizeof(buf));
     if (!((p = strrchr(buf, '/'))))
         return -1;
     *p = '\0';

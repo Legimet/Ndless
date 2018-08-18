@@ -15,10 +15,10 @@ TARGET=arm-none-eabi
 PREFIX="${PWD}/install" # or the directory where the toolchain should be installed in
 PARALLEL="-j4" # or "-j<number of build jobs>"
 
-BINUTILS=binutils-2.28 # http://www.gnu.org/software/binutils/
-GCC=gcc-7.3.0 # http://gcc.gnu.org/
-NEWLIB=newlib-2.4.0 # http://sourceware.org/newlib/
-GDB=gdb-8.0 # http://www.gnu.org/software/gdb/
+BINUTILS=binutils-2.31.1 # http://www.gnu.org/software/binutils/
+GCC=gcc-8.2.0 # http://gcc.gnu.org/
+NEWLIB=newlib-3.0.0.20180802 # http://sourceware.org/newlib/
+GDB=gdb-8.1.1 # http://www.gnu.org/software/gdb/
 
 # For newlib
 export CFLAGS_FOR_TARGET="-DHAVE_RENAME -DMALLOC_PROVIDED -DABORT_PROVIDED -DNO_FORK -mcpu=arm926ej-s -ffunction-sections -Ofast -funroll-loops"
@@ -26,7 +26,7 @@ export CXXFLAGS_FOR_TARGET="-DHAVE_RENAME -DMALLOC_PROVIDED -DABORT_PROVIDED -DN
 export PATH="${PREFIX}/bin:${PATH}"
 
 OPTIONS_BINUTILS="--target=${TARGET} --prefix=${PREFIX} --enable-interwork --enable-multilib --with-system-zlib --with-gnu-as --with-gnu-ld --disable-nls --with-float=soft --disable-werror"
-OPTIONS_GCC="--target=${TARGET} --prefix=${PREFIX} --enable-interwork --enable-multilib --enable-languages="c,c++" --with-system-zlib --with-newlib --with-headers=../${NEWLIB}/newlib/libc/include --disable-threads --disable-tls --disable-shared --with-gnu-as --with-gnu-ld --with-float=soft --disable-werror --disable-libstdcxx-verbose"
+OPTIONS_GCC="--target=${TARGET} --prefix=${PREFIX} --enable-interwork --enable-multilib --enable-languages=c,c++ --with-system-zlib --with-newlib --with-headers=../${NEWLIB}/newlib/libc/include --disable-threads --disable-tls --disable-shared --with-gnu-as --with-gnu-ld --with-float=soft --disable-werror --disable-libstdcxx-verbose"
 OPTIONS_NEWLIB="--target=${TARGET} --prefix=${PREFIX} --enable-interwork --enable-multilib --with-gnu-as --with-gnu-ld --disable-newlib-may-supply-syscalls --disable-newlib-supplied-syscalls --with-float=soft --disable-werror --disable-nls --enable-newlib-io-float"
 OPTIONS_GDB="--target=${TARGET} --prefix=${PREFIX} --enable-interwork --enable-multilib --disable-werror --with-python"
 
@@ -55,7 +55,7 @@ rm -f test test.c
 mkdir -p build download
 
 if [ ! -f .downloaded ]; then
-	wget -c http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2 -O download/${BINUTILS}.tar.bz2 && tar xvjf download/${BINUTILS}.tar.bz2 && \
+	wget -c ftp://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2 -O download/${BINUTILS}.tar.bz2 && tar xvjf download/${BINUTILS}.tar.bz2 && \
 	wget -c ftp://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.xz      -O download/${GCC}.tar.xz       && tar xvJf download/${GCC}.tar.xz && \
 	wget -c ftp://sourceware.org/pub/newlib/${NEWLIB}.tar.gz    -O download/${NEWLIB}.tar.gz    && tar xvzf download/${NEWLIB}.tar.gz && \
 	wget -c ftp://ftp.gnu.org/gnu/gdb/${GDB}.tar.xz             -O download/${GDB}.tar.xz       && tar xvJf download/${GDB}.tar.xz && \
