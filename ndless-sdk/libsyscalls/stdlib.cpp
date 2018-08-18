@@ -47,6 +47,8 @@ static void* saved_screen_buffer; //In case the program changes the buffer
 	static nio_console csl;
 #endif
 
+void  __crt0_exit(int ret); // Declared in crt0.S
+
 // Called at startup (even before c++ constructors are run)
 void initialise_monitor_handles()
 {
@@ -57,9 +59,13 @@ void initialise_monitor_handles()
 
 	// Initialization as early as possible, in case c++ constructors output something
 	#ifdef USE_NSPIREIO
-	        nio_init(&csl,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_BLACK,NIO_COLOR_WHITE,TRUE);
+	        if (!nio_init(&csl,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_BLACK,NIO_COLOR_WHITE,true))
+		{
+			_show_msgbox("Ndless", "Unable to initialize Nspire I/O console", 0);
+			__crt0_exit(EXIT_FAILURE);
+			__builtin_unreachable();
+		}
 	        nio_set_default(&csl);
-		nio_fflush(&csl);
 	#endif
 }
 
@@ -184,8 +190,6 @@ int _puts(const char *s)
 #endif
 }
 
-void  __crt0_exit(int ret); // Declared in crt0.S
-
 void _exit(int ret)
 {
 	#ifdef USE_NSPIREIO
@@ -300,11 +304,7 @@ int _read(int file, char *ptr, int len)
 #ifdef USE_NSPIREIO
 	if(file == 0)
 	{
-		if(!nio_fgets(ptr, len - 1, &csl))
-			*ptr = 0;
-
-		strcat(ptr, "\n");
-		return strlen(ptr);
+		return nio_read(&csl, ptr, len);
 	}
 #endif
 	NUC_FILE *f;
@@ -330,11 +330,7 @@ int _write(int file, char *ptr, int len)
 #ifdef USE_NSPIREIO
 	if(file == 1 || file == 2)
 	{
-		int len2 = len;
-		while(len2--)
-			nio_putchar(*ptr++);
-
-		return len;
+		return nio_write(&csl, ptr, len);
 	}
 #endif
 
